@@ -171,7 +171,7 @@ class jira (
   }
 
   if $enable_connection_pooling != undef {
-    deprecation('jira::enable_connection_pooling', 'jira::enable_connection_pooling has been removed and does nothing. Please simply configure the connection pooling parameters')
+    warning('jira::enable_connection_pooling has been removed and does nothing. Please simply configure the connection pooling parameters')
   }
 
   if $java_opts {
