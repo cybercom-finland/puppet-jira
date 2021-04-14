@@ -155,7 +155,7 @@ class jira::config inherits jira {
   file { "${jira::homedir}/jira-config.properties":
     content => inline_epp(@(EOF)
       <% $merged_jira_config_properties.each |$key, $val| { -%>
-      <%= $key %> = <% $val %>
+      <%= $key %> = <%= $val %>
       <%- } -%>
       EOF
     ),
