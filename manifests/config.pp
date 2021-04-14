@@ -157,7 +157,7 @@ class jira::config inherits jira {
       <% $merged_jira_config_properties.each |$key, $val| { -%>
       <%= $key %> = <%= $val %>
       <%- } -%>
-      EOF
+      | EOF
     ),
     mode    => '0600',
   }
