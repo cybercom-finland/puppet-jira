@@ -16,110 +16,108 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<Server port="<%= @tomcat_shutdown_port %>" shutdown="SHUTDOWN">
+<Server port="<%= $jira::tomcat_shutdown_port %>" shutdown="SHUTDOWN">
     <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
     <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
     <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener"/>
     <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
 
-<%- if scope.function_versioncmp([@version, '6.4.14']) <= 0 && @product =~ /^jira/ -%>
+<%- if versioncmp($jira::version, '6.4.14') <= 0 and $jira::product =~ /^jira/ { -%>
     <Listener className="org.apache.catalina.core.JasperListener"/>
-<% else -%>
+<% } else { -%>
     <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
-<%- end -%>
+<%- } -%>
 
     <Service name="Catalina">
-        <Connector port="<%= @tomcat_port %>"
-                   <%- if @tomcat_address -%>
-                   address="<%= @tomcat_address %>"
-                   <%- end -%>
-                   <%- if ( scope.function_versioncmp([@version, '7.12.1']) > 0 && @product =~ /^jira/ ) or @product =~ /^servicedesk/ -%>
+        <Connector port="<%= $jira::tomcat_port %>"
+                   <%- if $jira::tomcat_address { -%>
+                   address="<%= $jira::tomcat_address %>"
+                   <%- } -%>
+                   <%- if (versioncmp($jira::version, '7.12.1') > 0 and $jira::product =~ /^jira/ ) or $jira::product =~ /^servicedesk/ { -%>
                    relaxedPathChars="[]|"
                    relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"
-                   <%- end -%>
-                   maxThreads="<%= @tomcat_max_threads %>"
-                   minSpareThreads="<%= @tomcat_min_spare_threads %>"
-                   connectionTimeout="<%= @tomcat_connection_timeout %>"
-                   enableLookups="<%= @tomcat_enable_lookups %>"
-                   maxHttpHeaderSize="<%= @tomcat_max_http_header_size %>"
-                   protocol="<%= @tomcat_protocol %>"
-                   useBodyEncodingForURI="<%= @tomcat_use_body_encoding_for_uri %>"
-                   acceptCount="<%= @tomcat_accept_count %>"
-<%   if ! @proxy['scheme'] -%>
+                   <%- } -%>
+                   maxThreads="<%= $jira::tomcat_max_threads %>"
+                   minSpareThreads="<%= $jira::tomcat_min_spare_threads %>"
+                   connectionTimeout="<%= $jira::tomcat_connection_timeout %>"
+                   enableLookups="<%= $jira::tomcat_enable_lookups %>"
+                   maxHttpHeaderSize="<%= $jira::tomcat_max_http_header_size %>"
+                   protocol="<%= $jira::tomcat_protocol %>"
+                   useBodyEncodingForURI="<%= $jira::tomcat_use_body_encoding_for_uri %>"
+                   acceptCount="<%= $jira::tomcat_accept_count %>"
+<% if ! $jira::proxy['scheme'] { -%>
                    scheme="http"
-<%   end -%>
-                   disableUploadTimeout="<%= @tomcat_disable_upload_timeout %>"
+<% } -%>
+                   disableUploadTimeout="<%= $jira::tomcat_disable_upload_timeout %>"
                    bindOnInit="false"
-<% if @tomcat_native_ssl && @tomcat_redirect_https_port -%>
-                   redirectPort="<%= @tomcat_redirect_https_port %>"
-<% else -%>
-                   redirectPort="<%= @tomcat_https_port%>"
-<% end -%>
-<% if @proxy -%>
-<%   @proxy.sort.each do |key,value| -%>
-                   <%= key %> = <%= "\'#{value}\'" %>
-<%   end -%>
-<% end -%>
+<% if $jira::tomcat_native_ssl and $jira::tomcat_redirect_https_port { -%>
+                   redirectPort="<%= $jira::tomcat_redirect_https_port %>"
+<% } else { -%>
+                   redirectPort="<%= $jira::tomcat_https_port%>"
+<% } -%>
+<% if $jira::proxy { -%>
+<%   $jira::proxy.each |$key, $value| { -%>
+                   <%= $key %> = '<%= $value %>'
+<%   } -%>
+<% } -%>
         />
 
-<% if @tomcat_native_ssl -%>
+<% if $jira::tomcat_native_ssl { -%>
         <Connector
-                    port="<%= @tomcat_https_port %>"
-                    protocol="<%= @tomcat_protocol_ssl_real %>"
-                    <%- if @tomcat_address -%>
-                    address="<%= @tomcat_address %>"
-                    <%- end -%>
-                    <%- if ( scope.function_versioncmp([@version, '7.12.1']) > 0 && @product =~ /^jira/ ) or @product =~ /^servicedesk/ -%>
+                    port="<%= $jira::tomcat_https_port %>"
+                    protocol="<%= $jira::tomcat_protocol_ssl_real %>"
+                    <%- if $jira::tomcat_address { -%>
+                    address="<%= $jira::tomcat_address %>"
+                    <%- } -%>
+                    <%- if ( versioncmp($jira::version, '7.12.1') > 0 and $jira::product =~ /^jira/ ) or $jira::product =~ /^servicedesk/ { -%>
                     relaxedPathChars="[]|"
                     relaxedQueryChars="[]|{}^&#x5c;&#x60;&quot;&lt;&gt;"
-                    <%- end -%>
-                    maxHttpHeaderSize="<%= @tomcat_max_http_header_size %>"
+                    <%- } -%>
+                    maxHttpHeaderSize="<%= $jira::tomcat_max_http_header_size %>"
                     SSLEnabled="true"
-                    maxThreads="<%= @tomcat_max_threads %>"
-                    minSpareThreads="<%= @tomcat_min_spare_threads %>"
-                    enableLookups="<%= @tomcat_enable_lookups %>"
-                    disableUploadTimeout="<%= @tomcat_disable_upload_timeout %>"
-                    acceptCount="<%= @tomcat_accept_count %>"
-<%   if ! @proxy['scheme'] -%>
+                    maxThreads="<%= $jira::tomcat_max_threads %>"
+                    minSpareThreads="<%= $jira::tomcat_min_spare_threads %>"
+                    enableLookups="<%= $jira::tomcat_enable_lookups %>"
+                    disableUploadTimeout="<%= $jira::tomcat_disable_upload_timeout %>"
+                    acceptCount="<%= $jira::tomcat_accept_count %>"
+<%   if $jira::proxy['scheme'] { -%>
                     scheme="https"
-<%   end -%>
+<%   } -%>
                     secure="true"
                     clientAuth="false"
                     sslProtocol="TLS"
                     useBodyEncodingForURI="true"
-                    keyAlias="<%= @tomcat_key_alias %>"
-                    keystoreFile="<%= @tomcat_keystore_file %>"
-                    keystorePass="<%= @tomcat_keystore_pass %>"
-                    keystoreType="<%= @tomcat_keystore_type %>"
-<%   if @proxy -%>
-<%     @proxy.sort.each do |key,value| -%>
-                    <%= key %>=<%= "\'#{value}\'" %>
-<%     end -%>
-<%   end -%>
+                    keyAlias="<%= $jira::tomcat_key_alias %>"
+                    keystoreFile="<%= $jira::tomcat_keystore_file %>"
+                    keystorePass="<%= $jira::tomcat_keystore_pass %>"
+                    keystoreType="<%= $jira::tomcat_keystore_type %>"
+<%   if $jira::proxy { -%>
+<%     $jira::proxy.each |$key, $value| { -%>
+                    <%= key %> = '<%= $value %>'
+<%     } -%>
+<%   } -%>
         />
-<% end -%>
+<% } -%>
 
-<% if @ajp and ! @ajp.empty? -%>
+<% if !empty($jira::ajp) { -%>
         <Connector enableLookups="false" URIEncoding="UTF-8"
-<%   @ajp.sort.each do |key, value| -%>
-                   <%= key %> = <%= "\"#{value}\"" %>
-<%   end -%>
+<%   $jira::ajp.each |$key, $value| { -%>
+                   <%= key %> = '<%= $value %>'
+<%   } -%>
         />
-<% end -%>
+<% } -%>
 
-<% if @tomcat_additional_connectors and ! @tomcat_additional_connectors.empty? -%>
-<% @tomcat_additional_connectors.sort.map do |port, attrs| -%>
-        <Connector port="<%= port -%>"
-<% attrs.sort.map do |key, value| -%>
-                   <%= key -%>="<%= value -%>"
-<% end -%>
+<% $jira::tomcat_additional_connectors.each |$port, $attrs| { -%>
+        <Connector port="<%= $port -%>"
+<% $attrs.each |$key, $value| { -%>
+                   <%= $key -%>="<%= $value -%>"
+<% } -%>
                    />
-<% end -%>
-<% end -%>
+<% } -%>
         <Engine name="Catalina" defaultHost="localhost">
             <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true">
 
-                <Context path="<%= @contextpath %>" docBase="${catalina.home}/atlassian-jira" reloadable="false" useHttpOnly="true">
+                <Context path="<%= $jira::contextpath %>" docBase="${catalina.home}/atlassian-jira" reloadable="false" useHttpOnly="true">
 
                     <Resource name="UserTransaction" auth="Container" type="javax.transaction.UserTransaction"
                               factory="org.objectweb.jotm.UserTransactionFactory" jotm.timeout="60"/>
@@ -131,17 +129,17 @@
             </Host>
 
           <Valve className="org.apache.catalina.valves.AccessLogValve" resolveHosts="false"
-<% if @tomcat_accesslog_enable_xforwarded_for %>
+<% if $jira::tomcat_accesslog_enable_xforwarded_for { %>
                  requestAttributesEnabled="true"
-<% end -%>
-                 pattern="<%= @tomcat_accesslog_format %>"/>
+<% } -%>
+                 pattern="<%= $jira::tomcat_accesslog_format %>"/>
 
-<% if @tomcat_accesslog_enable_xforwarded_for %>
+<% if $jira::tomcat_accesslog_enable_xforwarded_for { %>
             <Valve
               className="org.apache.catalina.valves.RemoteIpValve"
               remoteIpHeader="x-forwarded-for"
               remoteIpProxiesHeader="x-forwarded-by"/>
-<% end -%>
+<% } -%>
         </Engine>
     </Service>
 </Server>
