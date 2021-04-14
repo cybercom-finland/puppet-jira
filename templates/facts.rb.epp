@@ -1,4 +1,4 @@
-#!<%= @ruby_bin %>
+#!<%= $jira::facts::ruby_bin %>
 # Facts:
 #   - jira_buildNumber
 #   - jira_version
